@@ -29,7 +29,7 @@ A friendly, multi‐turn chatbot built with Streamlit and Hugging Face’s emoti
 
 ## 🚀 Live Demo
 
-👉 https://huggingface.co/spaces/Opinder29/emotibot_v2
+👉 https://huggingface.co/spaces/opinder2906/emotibot_v2
 
 ---
 
