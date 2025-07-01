@@ -215,32 +215,103 @@ def preprocess_input(text):
     padded = encoded[:MAX_LEN] + [vocab['<PAD>']] * max(0, MAX_LEN - len(encoded))
     return torch.tensor([padded], dtype=torch.long).to(device)
 
-# Emotion responses
+ 3) Response logic
 responses = {
     "sadness": [
-        "It’s okay to feel down sometimes. I’m here to support you.",
-        "I'm really sorry you're going through this. Want to talk more about it?",
-        "You're not alone — I’m here for you."
+        "I’m sorry you’re feeling down. Would you like to step outside for fresh air together?",
+        "It’s okay to feel sad. How about writing down one thing you’re grateful for, then sharing it?",
+        "I hear you. Maybe some gentle stretching or yoga could help—want to try?",
+        "Maybe playing your favorite uplifting song and singing along could lift your mood—shall we?",
+        "Would you like to make a cup of tea or coffee and take a moment to yourself?",
+        "How about watching a short funny video or meme to get a little smile?",
+        "Perhaps texting someone you trust to let them know how you feel could lighten the load?",
+        "I’m here for you—would drawing or doodling to express your thoughts feel helpful?",
+        "Want to go for a quick walk around the block and focus on the surroundings?",
+        "Would counting down from ten on a deep breath then letting it go together help calm you?"
     ],
     "anger": [
-        "That must have been frustrating. Want to vent about it?",
-        "It's okay to feel this way. I'm listening.",
-        "Would it help to talk through it?"
+        "That sounds really frustrating. Would you like to scream into a pillow to release tension?",
+        "It’s understandable to be angry. How about taking five deep cleansing breaths with me?",
+        "Would you like to scribble your anger onto paper and then tear it up to let go?",
+        "Maybe going for a brisk walk or run could help burn off that steam—want to try?",
+        "How about doing a quick set of jumping jacks or push-ups to channel that energy?",
+        "Perhaps lightly punching a cushion or using a stress ball could help—shall we?",
+        "Would you like to try naming your anger and then talking it through step by step?",
+        "I’m here to listen—how about writing down what’s bothering you before we discuss?",
+        "Maybe shouting out loud in a safe space could help your body release the tension—want to?",
+        "Would taking a moment to count backward from ten and calm down before reacting help?"
     ],
     "love": [
-        "That’s beautiful to hear! What made you feel that way?",
-        "It’s amazing to experience moments like that.",
-        "Sounds like something truly meaningful."
+        "That’s wonderful. Would you like to send a quick thank-you message to someone who matters?",
+        "How about writing down three reasons you feel this love to savor the moment?",
+        "Would framing a photo or making a small memento to capture this feeling interest you?",
+        "Perhaps planning a surprise treat or small gift for the person you love could extend this joy?",
+        "Would you like to meditate for a few minutes, focusing on this loving feeling?",
+        "Maybe sharing a heartfelt compliment or kind word with someone else could amplify it?",
+        "How about creating a playlist of songs that bring up this loving energy—want to try?",
+        "Would writing a short love note to yourself reminding you why you’re special feel good?",
+        "Perhaps practicing a gratitude exercise and listing things you love about life could deepen it?",
+        "Would you like to spend a moment hugging yourself or a loved one to hold onto this warmth?"
     ],
-    "happiness": [
-        "That's awesome! What’s bringing you joy today?",
-        "I love hearing good news. 😊",
-        "Yay! Want to share more about it?"
+    "joy": [
+        "This is fantastic. Would you like to celebrate with a quick dance or your favorite song?",
+        "How about writing down three things that made you smile today to keep this feeling going?",
+        "Would you treat yourself to something small, like your favorite snack, to savor the joy?",
+        "Perhaps sharing this happy news with a friend or family member could double the fun?",
+        "Would taking a few minutes to close your eyes and relive the moment in detail help?",
+        "Maybe drawing or sketching how you feel could capture this joy—want to try?",
+        "How about doing a little spring or jumping movement to let the excitement out physically?",
+        "Would you like to take a photo or video to remember this moment forever?",
+        "Perhaps writing a cheerful note or text to someone could spread this joy outwards?",
+        "Would pausing to notice the sensory details—the sounds, sights, smells around you—enhance this joy?"
+    ],
+    "surprise": [
+        "That’s unexpected! Would you like to pause and take a few steady breaths with me?",
+        "Maybe jotting down what surprised you can help make sense of it—want to try?",
+        "How about asking a few questions to gather more info before we decide what’s next?",
+        "Would taking a step back to look at the big picture help you process this surprise?",
+        "Perhaps writing down possible positive outcomes could shift your perspective—shall we?",
+        "Would talking through what caught you off guard help make it less startling?",
+        "How about listing what you know for sure then what you’re unsure about to get clarity?",
+        "Would taking a short break—walking or stretching—help you come back to it calmly?",
+        "Perhaps imagining the best-case scenario of this surprise could spark excitement—want to try?",
+        "Would breathing in for four counts and out for four counts help steady your reaction?"
+    ],
+    "fear": [
+        "I’m here with you. Would you like to try the 5-4-3-2-1 grounding exercise together?",
+        "It’s okay to feel scared. How about exploring the worst-case scenario and its likelihood?",
+        "Would gentle self-talk like 'I’ve overcome hard things before' help you feel safer?",
+        "Perhaps folding your hands and focusing on that physical contact could soothe you—want to?",
+        "Would talking about what specifically worries you make it feel more manageable?",
+        "How about taking a slow walk while naming safe places or people in your mind?",
+        "Maybe placing a comforting object—like a blanket or stuffed animal—near you could help?",
+        "Would closing your eyes and taking three deep, slow breaths ease your anxiety?",
+        "Perhaps writing down all your fears then challenging each one with facts could reduce them—shall we?",
+        "Would listening to a calming sound—like soft music or nature sounds—help ground you?"
+    ],
+    "disgust": [
+        "That sounds really upsetting. Would stepping away for a moment or getting fresh air help?",
+        "How about taking a few deep breaths while focusing on something neutral, like your breath?",
+        "Would naming what you find off-putting allow you to release it more easily?",
+        "Maybe holding a comforting item—like a soft fabric—could help shift your focus—want to try?",
+        "Would distracting yourself briefly with a pleasant activity, like reading a favorite quote, help?",
+        "Perhaps washing your hands or face could reset your sensory experience—shall we?",
+        "Would taking a sip of water slowly and noticing its taste help bring you back?",
+        "How about visualizing a calm, clean environment to replace the unpleasantness?",
+        "Would listening to a soothing sound or song help you move past this feeling?",
+        "Perhaps focusing on a positive memory and immersing yourself in it could override the disgust?"
     ],
     "neutral": [
-        "Got it. I’m here if you want to dive deeper.",
-        "Thanks for sharing that. Tell me more if you’d like.",
-        "I’m listening. How else can I support you?"
+        "Feeling neutral? Would trying a new hobby for five minutes spark some interest?",
+        "How about picking one small task you enjoy—like doodling or stretching—to break the neutral state?",
+        "Would setting a quick mini-challenge—like writing a two-line poem—make things more engaging?",
+        "Perhaps stepping outside for a moment of sunshine or fresh air could lift your mood—want to try?",
+        "Would calling or messaging a friend for a brief chat add some warmth to your day?",
+        "How about listening to a motivating song and reflecting on why you chose it?",
+        "Would writing down one thing you’re curious about learning today help you feel more alive?",
+        "Perhaps doing five jumping jacks or a quick stretch could energize you—shall we?",
+        "Would looking at a favorite photo or memory and reminiscing on it brighten your mood?",
+        "How about drinking a glass of water mindfully, noticing its taste and temperature to ground yourself?"
     ]
 }
 
